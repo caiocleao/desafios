@@ -1,4 +1,4 @@
-package devPackeage;
+package formater;
 
 public class CaioFormater {
 	
@@ -27,7 +27,6 @@ public String formatText ( String text, int limit, Boolean justify ) {
 		String currentLine = "";
 		int beginIndex = 0;
 		int endIndex = limit;
-		int debug = 0;
 		String lastLine = "";
 		
 		if ( line.length() == 0 ) {
@@ -43,7 +42,6 @@ public String formatText ( String text, int limit, Boolean justify ) {
 					
 					do {
 						endIndex--;
-						debug++;
 					} while ( line.charAt(endIndex) != ' ' && line.charAt(endIndex) != '\n');
 					
 				
@@ -75,7 +73,6 @@ public String formatText ( String text, int limit, Boolean justify ) {
 			
 		}
 		
-		System.out.println(debug);
 		return formatedLine+lastLine;
 		
 	}

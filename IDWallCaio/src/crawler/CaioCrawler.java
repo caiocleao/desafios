@@ -1,4 +1,4 @@
-package devPackeage;
+package crawler;
 
 import java.io.IOException;
 import org.jsoup.Jsoup;
@@ -10,20 +10,24 @@ public class CaioCrawler {
 
 	final String redditLink = "https://old.reddit.com/r/";
 	
-	public void getSubsInfo ( String listOfSubs ) throws IOException {
+	public String getSubsInfo ( String listOfSubs ) throws IOException {
 		
 		String[] subs = listOfSubs.split(";");
+		String formatedInfo = "";
 		for ( String sub : subs ) {
-			getRedditInfo(sub);
-			// Print to better devide info on subs.
-			System.out.println("\n############################################################# \n ");
+			formatedInfo += getRedditInfo(sub);
+			// Dividing info on subs.
+			formatedInfo += ("#############################################################\n\n");
 		}
+		
+		return formatedInfo;
 		
 	}
 	
 	
-	public void getRedditInfo( String subReddit ) throws IOException {
+	public String getRedditInfo( String subReddit ) throws IOException {
 		
+		String formatedInfo = "";
 		String subLink = redditLink + subReddit;
 		Document doc = Jsoup.connect(subLink).get();
 		String subInfo = subReddit;
@@ -47,29 +51,31 @@ public class CaioCrawler {
 				} catch ( Exception e ) {
 					votesInt = 0;
 				}
-				//String subInfo = getSubReddit(post);
 				
 				// Since we have the current sub-reddit passed as a parameter, we don't need to get it from the HTML.
 				// Method build in case it is needed.
+				//String subInfo = getSubReddit(post);
+				
 				String titleName = getPostTitle(titleSection);
 				String linkToThread = getThreadLink(titleSection);
 				String linkToThreadComments = getCommentLink(titleSection);
 				
 				if ( votesInt >= 5000 ) {
 				
-					System.out.println("Subreddit: " + subInfo);
-					System.out.println("Number of upvotes: " + numberOfVotes);
-					System.out.println("Thread title: " + titleName);
-					System.out.println("Link to thread: " + linkToThread);
-					System.out.println("Link to thread Comments: " + linkToThreadComments);
-				
-					System.out.println("\n-------------------------------------------------------------\n");
+					formatedInfo += ("Subreddit: " + subInfo + "\n");
+					formatedInfo +=  ("Number of upvotes: " + numberOfVotes + "\n");
+					formatedInfo += ("Thread title: " + titleName + "\n");
+					formatedInfo += ("Link to thread: " + linkToThread + "\n");
+					formatedInfo +=("Link to thread Comments: " + linkToThreadComments + "\n");
+					formatedInfo += ("\n------------------------------------------------------------- \n\n");
 					
 				}
 				
 			}
 			
 		}
+	
+		return formatedInfo;
 		
 	}
 	
@@ -82,7 +88,6 @@ public class CaioCrawler {
 			// topMatter and tittle.
 			Elements topMatterElements =  topMatter.getElementsByClass("flat-list");
 			commentsLink = topMatterElements.select("a").first().attr("href");
-			
 			
 		}
 		
@@ -127,6 +132,7 @@ public class CaioCrawler {
 		
 		int innerCounter = 0;
 		String numberOfUpVotes = "";
+		
 		for ( Element parts : voteSection ) {
 			
 			Elements votes = parts.getElementsByClass("score unvoted");

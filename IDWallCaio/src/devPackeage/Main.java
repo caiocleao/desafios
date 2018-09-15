@@ -19,7 +19,7 @@ public class Main {
 		String firstTest = firstTest( text, limit, justify);
 		*/
 		CaioCrawler crawler = new CaioCrawler();
-		crawler.developmentMethod();
+		crawler.getSubsInfo("askreddit;worldnews;cats");
 		
 	
 	}
