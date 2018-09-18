@@ -1,31 +1,39 @@
 package crawler;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import objects.Post;
 
 public class CaioCrawler {
 
 	final String redditLink = "https://old.reddit.com/r/";
 	
-	public String getSubsInfo ( String listOfSubs ) throws IOException {
+	public List<Post>[] getSubsInfo ( String listOfSubs ) throws IOException {
 		
 		String[] subs = listOfSubs.split(";");
-		String formatedInfo = "";
+		int subsLength = subs.length;
+		List<Post>[] posts = new LinkedList[subsLength];
+		int subIndex = 0;
 		for ( String sub : subs ) {
-			formatedInfo += getRedditInfo(sub);
-			// Dividing info on subs.
-			formatedInfo += ("#############################################################\n\n");
+			
+			posts[subIndex] = getRedditInfo(sub);
+			//formatedInfo += ("#############################################################\n");
+			subIndex++;
+			
 		}
 		
-		return formatedInfo;
+		return posts;
 		
 	}
 	
-	
-	public String getRedditInfo( String subReddit ) throws IOException {
+	/** Returns a List of Posts contaning over 5000 upvotes **/
+	public List<Post> getRedditInfo( String subReddit ) throws IOException {
 		
 		String formatedInfo = "";
 		String subLink = redditLink + subReddit;
@@ -33,8 +41,8 @@ public class CaioCrawler {
 		String subInfo = subReddit;
 		Element siteTable = doc.getElementById("siteTable");
 		Elements posts = siteTable.children();
-		
 		// Needed:  upvotes, subreddit, título da thread, link para os comentários da thread, link da thread.
+		List<Post> postList =  new LinkedList<Post>();
 		
 		for ( Element post : posts ) {
 			
@@ -62,22 +70,39 @@ public class CaioCrawler {
 				
 				if ( votesInt >= 5000 ) {
 				
+					// Formats the information for ease of use.
 					formatedInfo += ("Subreddit: " + subInfo + "\n");
 					formatedInfo +=  ("Number of upvotes: " + numberOfVotes + "\n");
 					formatedInfo += ("Thread title: " + titleName + "\n");
 					formatedInfo += ("Link to thread: " + linkToThread + "\n");
 					formatedInfo +=("Link to thread Comments: " + linkToThreadComments + "\n");
-					formatedInfo += ("\n------------------------------------------------------------- \n\n");
+					formatedInfo += ("\n");
+					
+					/* 
+					Creates and sets object containing information formatted and 
+					stand-alone and adds it to the list.
+					 */
+					Post currentPost = new Post();
+					currentPost.setSubReddit(subInfo);
+					currentPost.setThreadComments(linkToThreadComments);
+					currentPost.setThreadLink(linkToThread);
+					currentPost.setThreadTitle(titleName);
+					currentPost.setUpvotes(numberOfVotes);
+					currentPost.setFormatedInfo(formatedInfo);
+					postList.add(currentPost);
+					formatedInfo = "";
+					// Once we have array/list of posts returning, remove this String setup.
 					
 				}
 				
 			}
 			
 		}
-	
-		return formatedInfo;
+		
+		return postList;
 		
 	}
+
 	
 	public String getCommentLink ( Elements titleSection ) {
 		
@@ -94,6 +119,7 @@ public class CaioCrawler {
 		return commentsLink;
 	}
 	
+
 	public String getThreadLink ( Elements titleSection ) {
 		
 		String threadLink = "";
@@ -104,10 +130,16 @@ public class CaioCrawler {
 			Elements topMatterElements =  topMatter.getElementsByClass("title");
 			threadLink = topMatterElements.select("a").first().attr("href");
 			
+			// For reddit posts containing links to other reddit posts, we need to add the base URL.
+			if ( !threadLink.contains("http://") && !threadLink.contains("https://") ) {
+				threadLink = "https://old.reddit.com" + threadLink;
+			}
+			
 		}
 		
 		return threadLink;
 	}
+
 	
 	public String getSubReddit( Element post ) {
 		
@@ -115,6 +147,7 @@ public class CaioCrawler {
 		return subReddit;
 	}
 	
+
 	public String getPostTitle( Elements titleSection ) {
 		
 		String titleName = "";
@@ -125,12 +158,14 @@ public class CaioCrawler {
 			titleName = topMatterElements.text();
 			
 		}
+		
 		return titleName;
+	
 	}
 	
+
 	public String getNumberOfUpVotes ( Elements voteSection ) {
 		
-		int innerCounter = 0;
 		String numberOfUpVotes = "";
 		
 		for ( Element parts : voteSection ) {
@@ -140,10 +175,6 @@ public class CaioCrawler {
 				numberOfUpVotes = typeVote.attr("title");	
 			}
 			
-			if( innerCounter > 3 ) {
-				break;
-			}
-			innerCounter++;
 		}
 		
 		return numberOfUpVotes;
