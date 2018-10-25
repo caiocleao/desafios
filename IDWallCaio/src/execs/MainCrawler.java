@@ -1,7 +1,6 @@
 package execs;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 import crawler.CaioCrawler;
@@ -9,6 +8,8 @@ import objects.Post;
 
 public class MainCrawler {
 
+	/* executable file created for method testing without Telegram integration. */
+	
 	public static void main(String[] args) throws IOException {
 		
 		System.out.println("teste");
