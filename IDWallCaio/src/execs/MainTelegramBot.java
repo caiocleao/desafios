@@ -20,8 +20,8 @@ public class MainTelegramBot extends TelegramLongPollingBot  {
 	  Bot information:
 	  Name:      CaioCrawlerBot
 	  Username:  redditCrawlerCaioBot
-	  HTTP API Token: 678126396:AAGOPqxtCHnKEWVFY3SIcejqBT1oob98rvg
 	 */
+	 
 	
 	public static void main(String[] args) {
 	
@@ -60,6 +60,7 @@ public class MainTelegramBot extends TelegramLongPollingBot  {
 	    	String[] subNames = command.split(";");
 	    	int indexSubNames = 0;
 	    	List<Post>[] subInfo;
+	    	
 	    	
 			try {
 				subInfo = crawler.getSubsInfo(command);
