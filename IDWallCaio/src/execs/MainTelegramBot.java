@@ -61,7 +61,6 @@ public class MainTelegramBot extends TelegramLongPollingBot  {
 	    	int indexSubNames = 0;
 	    	List<Post>[] subInfo;
 	    	
-	    	
 			try {
 				subInfo = crawler.getSubsInfo(command);
 				// Iterate over the subreddits
